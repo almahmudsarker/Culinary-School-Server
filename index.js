@@ -132,7 +132,7 @@ async function run() {
       res.send(result);
     })
 
-    // review related apis
+    //class review related apis
     app.get('/reviews', async (req, res) => {
       const result = await reviewCollection.find().toArray();
       res.send(result);

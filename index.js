@@ -185,7 +185,6 @@ async function run() {
       })
     })
 
-
     // stripe payment related api
     app.post('/payments', verifyJWT, async (req, res) => {
       const payment = req.body;

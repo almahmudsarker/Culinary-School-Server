@@ -80,7 +80,7 @@ async function run() {
         return res.send({ message: 'user already exists' })
       }
 
-      
+
       const result = await usersCollection.insertOne(user);
       res.send(result);
     });
@@ -97,7 +97,7 @@ async function run() {
       const result = { admin: user?.role === 'admin' }
       res.send(result);
     })
-
+//modified user role
     app.patch('/users/admin/:id', async (req, res) => {
       const id = req.params.id;
       console.log(id);

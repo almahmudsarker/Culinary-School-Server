@@ -80,6 +80,7 @@ async function run() {
         return res.send({ message: 'user already exists' })
       }
 
+      
       const result = await usersCollection.insertOne(user);
       res.send(result);
     });

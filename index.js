@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 require('dotenv').config()
 const stripe = require('stripe')(process.env.PAYMENT_SECRET_KEY)
 const port = process.env.PORT || 5000;
+const instructors = require("./data/instructors.json");
 
 app.use(cors());
 app.use(express.json());
@@ -40,7 +41,6 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
-    await client.connect();
     const usersCollection = client.db("culinaryDb").collection("users");
     const menuCollection = client.db("culinaryDb").collection("menu");
     const reviewCollection = client.db("culinaryDb").collection("reviews");
@@ -54,6 +54,9 @@ async function run() {
       res.send({ token })
     })
 
+    app.get("/instructors", (req, res) => {
+      res.send(instructors);
+    });
     // verifyJWT before using verifyAdmin
     const verifyAdmin = async (req, res, next) => {
       const email = req.decoded.email;

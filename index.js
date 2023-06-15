@@ -5,7 +5,6 @@ const jwt = require('jsonwebtoken');
 require('dotenv').config()
 const stripe = require('stripe')(process.env.PAYMENT_SECRET_KEY)
 const port = process.env.PORT || 5000;
-const instructors = require("./data/instructors.json");
 
 app.use(cors());
 app.use(express.json());
@@ -46,6 +45,7 @@ async function run() {
     const reviewCollection = client.db("culinaryDb").collection("reviews");
     const cartCollection = client.db("culinaryDb").collection("carts");
     const paymentCollection = client.db("culinaryDb").collection("payments");
+    const instructorsCollection = client.db("culinaryDb").collection("instructors");
 
     app.post('/jwt', (req, res) => {
       const user = req.body;
@@ -54,9 +54,6 @@ async function run() {
       res.send({ token })
     })
 
-    app.get("/instructors", (req, res) => {
-      res.send(instructors);
-    });
     // verifyJWT before using verifyAdmin
     const verifyAdmin = async (req, res, next) => {
       const email = req.decoded.email;
@@ -122,6 +119,13 @@ async function run() {
       res.send(result);
     })
 
+    app.get('/menus/:id', async (req, res) => {
+        const id = req.params.id;
+        const query = { _id: new ObjectId(id) };
+        const b = await menuCollection.findOne(query);
+        res.send(b);
+    });
+
     app.post('/menu', verifyJWT, verifyAdmin, async (req, res) => {
       const newItem = req.body;
       const result = await menuCollection.insertOne(newItem)
@@ -134,6 +138,26 @@ async function run() {
       const result = await menuCollection.deleteOne(query);
       res.send(result);
     })
+
+    //Instructors related apis
+    app.get("/allinstructors", async (req, res) => {
+      const result = await instructorsCollection.find().toArray();
+      res.send(result);
+    });
+
+    app.get("/allinstructors/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const b = await instructorsCollection.findOne(query);
+      res.send(b);
+    });
+
+    app.get("/instructorslimit", async (req, res) => {
+      let query = {};
+      const cursor = instructorsCollection.find(query).limit(6).sort({ $natural: -1 });
+      const serve = await cursor.toArray();
+      res.send(serve);
+    });
 
     //class review related apis
     app.get('/reviews', async (req, res) => {
